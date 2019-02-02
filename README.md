@@ -1,6 +1,6 @@
-# flutter_app
+# Geocoding_Flutter
 
-A new Flutter application.
+A new Flutter application for query based Geocoding on Flutter. Uses leaflet maps
 
 ## Getting Started
 
