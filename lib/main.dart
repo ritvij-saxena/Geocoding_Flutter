@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+//import 'package:latlong/latlong.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:flutter_app/locationUpdate.dart';
 
 void main() => runApp(MyApp());
 
@@ -30,52 +31,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController addressTextController = TextEditingController();
   Marker markers;
-  double latCenter , lngCenter;
+  double latCenter, lngCenter;
+  bool requestForAddress = false;
+  bool isClicked = false;
 
   void searchPlace(String text) async {
     var addresses = await Geocoder.local.findAddressesFromQuery(text);
     var first = addresses.first;
-    markers = null;
     setState(() {
       latCenter = first.coordinates.latitude;
       lngCenter = first.coordinates.longitude;
-      markers = Marker(
-        width: 45.0,
-        height: 45.0,
-        point: LatLng(first.coordinates.latitude, first.coordinates.longitude),
-        builder: (context) => Container(
-              child: IconButton(
-                  icon: Icon(Icons.location_on),
-                  color: Colors.red,
-                  iconSize: 45.0,
-                  onPressed: () => Scaffold.of(context)
-                      .showSnackBar(SnackBar(content: Text(text)))),
-            ),
-      );
     });
-  }
-
-  setMarkers() {
-    return markers;
-  }
-  getMap(){
-    return FlutterMap(
-      options: MapOptions(
-          interactive: true,
-          maxZoom: 10.0),
-      layers: [
-        TileLayerOptions(
-          urlTemplate:
-          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          subdomains: ['a', 'b', 'c'],
-        ),
-        MarkerLayerOptions(markers: [
-          setMarkers() == null
-              ? Marker(point: LatLng(-40, -50))
-              : setMarkers()
-        ]),
-      ],
-    );
   }
 
   @override
@@ -108,6 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Scaffold.of(context).showSnackBar(SnackBar(
                                     content: Text('Enter Some Address')));
                               } else {
+                                requestForAddress = true;
+                                isClicked = true;
                                 searchPlace(addressTextController.text);
                               }
 
@@ -135,8 +103,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
               Expanded(
-                  child: getMap()
-              )
+                  child: isClicked == true
+                      ? LocationUpdate(
+                          text: addressTextController.text,
+                          lat: latCenter,
+                          lng: lngCenter,
+                          request: true)
+                      : LocationUpdate() //text: addressTextController.text,lat: latCenter,lng: lngCenter,request: requestForAddress)
+                  )
             ],
           );
         }));
