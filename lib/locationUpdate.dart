@@ -41,7 +41,7 @@ class LocationUpdateState extends State<LocationUpdate> {
     return FlutterMap(
       options: MapOptions(
           interactive: true,
-         // center: LatLng(widget.lat, widget.lng),
+          center: LatLng(widget.lat, widget.lng),
           maxZoom: 20.0),
       layers: [
         TileLayerOptions(
